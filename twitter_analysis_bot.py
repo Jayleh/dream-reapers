@@ -1,4 +1,5 @@
 # Dependencies
+import sys
 import datetime as dt
 import pandas as pd
 import numpy as np
@@ -16,7 +17,6 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser(),
 
 # Initialize Sentiment Analyzer
 analyzer = SentimentIntensityAnalyzer()
-
 
 # "Real Person" Filters
 min_tweets = 5
@@ -91,6 +91,9 @@ def searchToday():
                     # in the new search
                     oldest_tweet = oldest_tweet - 1
 
+    except RateLimitError:
+        print("You have exceeded Twitter's rate limit. Come back in 15 minutes and try again.")
+        sys.exit(1)
     except Exception as e:
         print(e)
 
@@ -166,6 +169,9 @@ def searchDate(until_date):
                     # in the new search
                     oldest_tweet = oldest_tweet - 1
 
+    except RateLimitError:
+        print("You have exceeded Twitter's rate limit. Come back in 15 minutes and try again.")
+        sys.exit(1)
     except Exception as e:
         print(e)
 
@@ -195,7 +201,7 @@ while run_again:
     search_term = input("What do you want to search for on Twitter? ")
 
     # Search until date
-    search_date = input("Do you want to specify a date? ").lower()
+    search_date = input("Do you want to specify a date? Yes or no. ").lower()
 
     # Conditional to check user input
     if search_date in no_list:
@@ -217,12 +223,21 @@ while run_again:
         print(f"Average compound sentiment value: '{tweet_analysis['Compound']}'")
         print(f"Number of analyzed tweets: '{tweet_analysis['Tweet Count']}'\n")
 
-        # Ask to run again
-        run_again_input = input("Do you want to run another analysis? ").lower()
+        # Instantiate run again while loop
+        ask_another = True
 
-        if run_again_input in no_list:
-            print("\nThank you for using twitter analysis bot! Have a good one.")
-            run_again = False
+        while ask_another:
+            # Ask to run again
+            run_again_input = input("Do you want to run another analysis? ").lower()
+
+            if run_again_input in no_list:
+                print("\nThank you for using twitter analysis bot! Have a good one.")
+                ask_another = False
+                run_again = False
+            elif run_again_input in yes_list:
+                ask_another = False
+            elif (run_again_input not in no_list) and (run_again_input not in yes_list):
+                print("Yes or no question. Try again.\n")
 
     elif search_date in yes_list:
 
@@ -280,15 +295,24 @@ while run_again:
         print(f"Average compound sentiment value: '{tweet_analysis['Compound']}'")
         print(f"Number of analyzed tweets: '{tweet_analysis['Tweet Count']}'\n")
 
-        # Ask to run again
-        run_again_input = input("Do you want to run another analysis? ").lower()
+        # Instantiate run again while loop
+        ask_another = True
 
-        if run_again_input in no_list:
-            print("\nThank you for using twitter analysis bot! Have a good one.")
-            run_again = False
+        while ask_another:
+            # Ask to run again
+            run_again_input = input("Do you want to run another analysis? ").lower()
+
+            if run_again_input in no_list:
+                print("\nThank you for using twitter analysis bot! Have a good one.")
+                ask_another = False
+                run_again = False
+            elif run_again_input in yes_list:
+                ask_another = False
+            elif (run_again_input not in no_list) and (run_again_input not in yes_list):
+                print("Yes or no question. Try again.\n")
 
     elif (search_date not in no_list) and (search_date not in yes_list):
-        print("Yes or no question. Try again.")
+        print("It was a yes or no question. Try again.")
     else:
         print("Sorry, too many problems. Imma dip out :)")
         run_again = False
