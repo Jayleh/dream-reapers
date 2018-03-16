@@ -287,7 +287,8 @@ while run_again:
             print("\nThank you for using twitter analysis bot! Have a good one.")
             run_again = False
 
+    elif (search_date not in no_list) and (search_date not in yes_list):
+        print("Yes or no question. Try again.")
     else:
-        # Exit the program
-        print("Sorry, there was a problem. Imma dip out :)")
+        print("Sorry, too many problems. Imma dip out :)")
         run_again = False
