@@ -1,3 +1,27 @@
+# Dependencies
+import json
+import requests
+from datetime import datetime
+import time
+import tweepy
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from config import (consumer_key, consumer_secret,
+                    access_token, access_token_secret)
+
+# Setup Tweepy API Authentication
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth, parser=tweepy.parsers.JSONParser(),
+                 wait_on_rate_limit=False, wait_on_rate_limit_notify=False)
+
+# Import and Initialize Sentiment Analyzer
+analyzer = SentimentIntensityAnalyzer()
+
 movie_query = input("What Movie would you like to search? ")
 omdbapi = "e8913e4c"
 omdb1 = "http://www.omdbapi.com/?t="
