@@ -7,6 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tweepy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import sys
+
+# Grab config file
+sys.path.insert(0, '..')
 from config import (consumer_key, consumer_secret,
                     access_token, access_token_secret)
 
@@ -108,5 +112,5 @@ movie_sent_df = pd.DataFrame(sentiment)
 movie_sent_df = movie_sent_df.iloc[:, [1, 0, 2, 3]]
 
 # Save to csv
-# movie_sent_df.to_csv(f'prediction_data/{search_date}_movie_sentiment.csv',
+# movie_sent_df.to_csv(f'{search_date}_movie_sentiment.csv',
 #                      encoding='utf-8', index=False)

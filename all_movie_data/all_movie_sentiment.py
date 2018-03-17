@@ -4,6 +4,10 @@ import pandas as pd
 import numpy as np
 import tweepy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import sys
+
+# Grab config file
+sys.path.insert(0, '..')
 from config import (consumer_key, consumer_secret,
                     access_token, access_token_secret)
 
@@ -17,7 +21,7 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser(),
 analyzer = SentimentIntensityAnalyzer()
 
 # Movie csv path
-csv_path = 'box_office_data/moviesFinal.csv'
+csv_path = '../box_office_data/moviesFinal.csv'
 
 # Read csv
 movie_df = pd.read_csv(csv_path)
@@ -100,10 +104,10 @@ movie_sent_df = movie_sent_df[["title", "compound", "tweet_count"]]
 today = dt.strftime(dt.now(), "%Y-%m-%d")
 
 # Save to csv
-# movie_sent_df.to_csv(f'all_movie_data/{today}_all_movie_sent.csv', encoding='utf-8', index=False)
+# movie_sent_df.to_csv(f'{today}_all_movie_sent.csv', encoding='utf-8', index=False)
 
 # Merge dataframes
 merged_df = pd.merge(movie_df, movie_sent_df, how="left")
 
 # Save to csv
-# merged_df.to_csv(f'all_movie_data/{today}_all_movie_data.csv', encoding='utf-8', index=False)
+# merged_df.to_csv(f'{today}_all_movie_data.csv', encoding='utf-8', index=False)
