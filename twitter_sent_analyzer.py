@@ -26,6 +26,7 @@ max_following = 2500
 lang = "en"
 
 
+# Function to search today's most recent tweets
 def searchToday():
 
     # Grab today's date
@@ -43,10 +44,13 @@ def searchToday():
     # List of some tweets
     tweet_text_list = []
 
+    # Instantiate tweet count
+    tweet_count = 1
+
     try:
 
-        # Paginate 18
-        for x in range(1):
+        # Paginate 10 times (Total of 1000 Tweets)
+        for x in range(10):
 
             # Get all tweets from home feed (for each page specified)
             public_tweets = api.search(search_term,
@@ -60,9 +64,9 @@ def searchToday():
 
                 # Use filters to check if user meets conditions
                 if (tweet["user"]["followers_count"] < max_followers and
-                    tweet["user"]["statuses_count"] > min_tweets and
-                    tweet["user"]["statuses_count"] < max_tweets and
-                    tweet["user"]["friends_count"] < max_following and
+                        tweet["user"]["statuses_count"] > min_tweets and
+                        tweet["user"]["statuses_count"] < max_tweets and
+                        tweet["user"]["friends_count"] < max_following and
                         tweet["user"]["lang"] == lang):
 
                     # Grab tweet data
@@ -79,7 +83,11 @@ def searchToday():
                     compound_list.append(compound)
 
                     # Create dictionary holding tweet data
-                    tweet_dict = {'Search_term': search_term, 'Date': today, 'Compound': compound}
+                    tweet_dict = {'Search_term': search_term, 'Date': today, 'Compound': compound,
+                                  'Tweets Ago': tweet_count}
+
+                    # Increment tweet_count
+                    tweet_count += 1
 
                     # Append tweet data to sentiment list
                     sentiment.append(tweet_dict)
@@ -103,9 +111,13 @@ def searchToday():
                       "Compound": np.mean(compound_list).round(3),
                       "Tweet Count": len(compound_list)}
 
-    return tweet_text_list, tweet_analysis
+    # Create dataframe
+    sentiment_df = pd.DataFrame(sentiment)
+
+    return tweet_text_list, tweet_analysis, sentiment_df
 
 
+# Function to search a specified date's most recent tweets
 def searchDate(until_date):
 
     # Create variable for holding the oldest tweet
@@ -120,10 +132,13 @@ def searchDate(until_date):
     # List of some tweets
     tweet_text_list = []
 
+    # Instantiate tweet count
+    tweet_count = 1
+
     try:
 
-        # Paginate 18
-        for x in range(1):
+        # Paginate 10 times (Total of 1000 Tweets)
+        for x in range(10):
 
             # Get all tweets from home feed (for each page specified)
             public_tweets = api.search(search_term,
@@ -156,8 +171,11 @@ def searchDate(until_date):
                     compound_list.append(compound)
 
                     # Create dictionary holding tweet data
-                    tweet_dict = {'Search_term': search_term,
-                                  'Date': user_date, 'Compound': compound}
+                    tweet_dict = {'Search_term': search_term, 'Date': user_date,
+                                  'Compound': compound, 'Tweets Ago': tweet_count}
+
+                    # Increment tweet_count
+                    tweet_count += 1
 
                     # Append tweet data to sentiment list
                     sentiment.append(tweet_dict)
@@ -181,7 +199,54 @@ def searchDate(until_date):
                       "Compound": np.mean(compound_list).round(3),
                       "Tweet Count": len(compound_list)}
 
-    return tweet_text_list, tweet_analysis
+    # Create dataframe
+    sentiment_df = pd.DataFrame(sentiment)
+
+    return tweet_text_list, tweet_analysis, sentiment_df
+
+
+# Function to plot vader sentiment analysis and return image path
+def plotSentiment(sentiment_df, search_term):
+
+    # Set axes
+    tweets_ago = np.arange(1, len(sentiment_df)+1)
+    target = sentiment_df['Compound']
+
+    # Set figure size
+    plt.figure(figsize=(10, 7))
+
+    # Plot
+    target_plot, = plt.plot(tweets_ago, target, marker='o', ms=7.5, color='steelblue',
+                            alpha=0.8, lw=0.5, label=f"{search_term}")
+
+    # Set limits
+    plt.xlim(len(sentiment_df)+6, -5)
+    plt.ylim(-1.05, 1.05)
+
+    # Set axes background color
+    ax = plt.gca()
+    ax.set_facecolor('whitesmoke')
+
+    # Insert grid lines and set behind plot elements
+    ax.grid(color='white')
+    ax.set_axisbelow(True)
+
+    # Specify max number of ticks in x-axis
+    plt.locator_params(axis='y', numticks=1)
+
+    # Labels
+    plt.title(f"Sentiment Analysis of '{search_term}' Tweets", fontsize=20)
+    plt.xlabel('Tweets Ago', fontsize=18)
+    plt.ylabel('Tweet Polarity', fontsize=18)
+
+    # Legend
+    # plt.legend(handles=[target_plot], title='Tweets', loc=1, bbox_to_anchor=(1.15, 1))
+
+    # Format datetime for saving image
+    # today = dt.now().strftime('%Y%m%d')
+
+    # Show graph
+    plt.show()
 
 
 '''
@@ -207,10 +272,10 @@ while run_again:
     if search_date in no_list:
 
         # Print search text
-        print(f"Awesome! Let's do a search for tweets that contain '{search_term}'.\n")
+        print(f"Awesome! One sec. Let's do a search for tweets that contain '{search_term}'.\n")
 
         # Run analysis and grab tweets and analysis
-        tweet_text_list, tweet_analysis = searchToday()
+        tweet_text_list, tweet_analysis, sentiment_df = searchToday()
 
         # Print some tweets
         print("Here are some tweets:")
@@ -220,8 +285,12 @@ while run_again:
         # Print analysis
         print(f"\nHere is the analysis for today's tweets:")
         print(f"What you searched for: '{tweet_analysis['Search']}'")
-        print(f"Average compound sentiment value: '{tweet_analysis['Compound']}'")
-        print(f"Number of analyzed tweets: '{tweet_analysis['Tweet Count']}'\n")
+        print(f"Average compound sentiment value: {tweet_analysis['Compound']}")
+        print(f"Number of filtered analyzed tweets (out of 1000): "
+              f"{tweet_analysis['Tweet Count']}\n")
+
+        # Run plot function
+        plotSentiment(sentiment_df, search_term)
 
         # Instantiate run again while loop
         ask_another = True
@@ -231,7 +300,7 @@ while run_again:
             run_again_input = input("Do you want to run another analysis? ").lower()
 
             if run_again_input in no_list:
-                print("\nThank you for using twitter analysis bot! Have a good one.")
+                print("\nThank you for using twitter sentiment analyzer! Have a good one.")
                 ask_another = False
                 run_again = False
             elif run_again_input in yes_list:
@@ -278,11 +347,11 @@ while run_again:
             except Exception as e:
                 print(e)
 
-        print(f"Awesome! Let's do a search for tweets that contain '{search_term}' "
+        print(f"Awesome! One sec. Let's do a search for tweets that contain '{search_term}' "
               f"for the date {user_date}.\n")
 
         # Run search by date function
-        tweet_text_list, tweet_analysis = searchDate(until_date)
+        tweet_text_list, tweet_analysis, sentiment_df = searchDate(until_date)
 
         # Print some tweets
         print("Here are some tweets:")
@@ -292,8 +361,12 @@ while run_again:
         # Print analysis
         print(f"\nHere is the analysis for {user_date}'s tweets:")
         print(f"What you searched for: '{tweet_analysis['Search']}'")
-        print(f"Average compound sentiment value: '{tweet_analysis['Compound']}'")
-        print(f"Number of analyzed tweets: '{tweet_analysis['Tweet Count']}'\n")
+        print(f"Average compound sentiment value: {tweet_analysis['Compound']}")
+        print(f"Number of filtered analyzed tweets (out of 1000): "
+              f"{tweet_analysis['Tweet Count']}\n")
+
+        # Run plot function
+        plotSentiment(sentiment_df, search_term)
 
         # Instantiate run again while loop
         ask_another = True
@@ -303,7 +376,7 @@ while run_again:
             run_again_input = input("Do you want to run another analysis? ").lower()
 
             if run_again_input in no_list:
-                print("\nThank you for using twitter analysis bot! Have a good one.")
+                print("\nThank you for using twitter sentiment analyzer! Have a good one.")
                 ask_another = False
                 run_again = False
             elif run_again_input in yes_list:
