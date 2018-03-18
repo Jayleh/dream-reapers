@@ -254,8 +254,9 @@ Below implements user input to conduct twitter extraction and analyses.
 '''
 
 # Potential response lists
-yes_list = ["yes", "y", "yep", "yeah", "yea", "sure", "ya", "yah", "ye"]
-no_list = ["no", "n", "nah", "nope", "never", "no way", "nein"]
+yes_list = ["yes", "y", "yep", "yeah", "yea", "sure",
+            "ya", "yah", "ye", "affirmative", "absolutely"]
+no_list = ["no", "n", "na", "nah", "nope", "never", "no way", "nein"]
 
 # Instantiate run again while loop
 run_again = True
