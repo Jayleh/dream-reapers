@@ -1,7 +1,6 @@
 omdb_key = "e8913e4c"
 
-# Twitter API Keys
-consumer_key = "ec6gL3ASXa7jBNNmb3tuyVsJM"
-consumer_secret = "bOtaxqvBur8bVxiSLf6qkFXr1QXqmQZGP664c3iIOOB8EweWSk"
-access_token = "969399323145289729-E6sNmYKi96fMPFBKs7BmynG9VQ2LoN4"
-access_token_secret = "4YsEHlScIp9YNb0IrEkvT7fJemTGYjnnPgoVW8fpJF4g9"
+consumer_key = "SDrpjytN0WCRyOjMFWomGWMUD"
+consumer_secret = "19xZsMfMmX6I4Esdeimv1Ya3iWzLPRKBTSj9NpGk2rLhlacaL8"
+access_token = "969399451289661440-5PSLNXiWrCAlu3jwiMZrTT0iMXsoTTD"
+access_token_secret = "JvI5XDmliwv8tUziNOKJjIP5sOOLcVDHU7R415ooX5wrs"
